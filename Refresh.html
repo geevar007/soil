@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>സമർപ്പണം (Submission Form)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Malayalam -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manjari:wght@400;700&family=Gayathri:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Manjari', 'Gayathri', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f3f4f6;
+            color: #111827;
+        }
+
+        /* A4 Page Dimensions and Layout */
+        .a4-page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 25mm 20mm 20mm 25mm;
+            margin: 20px auto;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Document Body Styling */
+        .doc-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 1.5rem; /* One line space after heading */
+        }
+
+        .doc-content {
+            font-size: 20px;
+            line-height: 1.8;
+            text-align: justify;
+            margin-bottom: 1rem; /* Single line space between matter and footer */
+        }
+
+        .doc-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end; /* Align bottom items on the same line */
+            font-size: 20px;
+            line-height: 1.8;
+        }
+
+        .plain-text {
+            font-weight: normal !important;
+            text-decoration: none !important;
+            border-bottom: none !important;
+        }
+
+        /* Print Specific CSS */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+            body {
+                background: white;
+                margin: 0;
+                padding: 0;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .a4-page {
+                width: 210mm;
+                height: 297mm;
+                margin: 0;
+                padding: 25mm 20mm 20mm 25mm;
+                box-shadow: none;
+                border: none;
+                page-break-after: avoid;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-10">
+
+    <!-- Control Panel / Input Form (Hidden when printing) -->
+    <div class="no-print max-w-4xl mx-auto my-6 p-6 bg-white rounded-xl shadow-md border border-gray-200">
+        <h2 class="text-xl font-bold text-indigo-700 mb-4 flex items-center gap-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+            വിവരങ്ങൾ നൽകുക
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Month Selection -->
+            <div>
+                <label for="monthInput" class="block text-sm font-semibold text-gray-700 mb-1">മാസം (Month)</label>
+                <select id="monthInput" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
+                    <option value="ജനുവരി" data-num="01">01 - ജനുവരി</option>
+                    <option value="ഫെബ്രുവരി" data-num="02">02 - ഫെബ്രുവരി</option>
+                    <option value="മാർച്ച്" data-num="03">03 - മാർച്ച്</option>
+                    <option value="ഏപ്രിൽ" data-num="04">04 - ഏപ്രിൽ</option>
+                    <option value="മെയ്" data-num="05">05 - മെയ്</option>
+                    <option value="ജൂൺ" data-num="06">06 - ജൂൺ</option>
+                    <option value="ജൂലൈ" data-num="07">07 - ജൂലൈ</option>
+                    <option value="ഓഗസ്റ്റ്" data-num="08">08 - ഓഗസ്റ്റ്</option>
+                    <option value="സെപ്റ്റംബർ" data-num="09">09 - സെപ്റ്റംബർ</option>
+                    <option value="ഒക്ടോബർ" data-num="10" selected>10 - ഒക്ടോബർ</option>
+                    <option value="നവംബർ" data-num="11">11 - നവംബർ</option>
+                    <option value="ഡിസംബർ" data-num="12">12 - ഡിസംബർ</option>
+                </select>
+            </div>
+
+            <!-- Total Field Days -->
+            <div>
+                <label for="daysCountInput" class="block text-sm font-semibold text-gray-700 mb-1">ആകെ ദിവസങ്ങൾ (Total Days)</label>
+                <input type="text" id="daysCountInput" value="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+
+            <!-- Included Dates (Numbers only, month suffix added dynamically) -->
+            <div>
+                <label for="datesListInput" class="block text-sm font-semibold text-gray-700 mb-1">ഉൾപ്പെട്ട തീയതികൾ (Dates)</label>
+                <input type="text" id="datesListInput" value="12, 14, 15, 18, 20" placeholder="eg: 12, 14, 15" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+
+            <!-- Place Input -->
+            <div>
+                <label for="placeInput" class="block text-sm font-semibold text-gray-700 mb-1">സ്ഥലം (Place)</label>
+                <input type="text" id="placeInput" value="തൃശ്ശൂർ" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+
+            <!-- Submission Date -->
+            <div>
+                <label for="dateInput" class="block text-sm font-semibold text-gray-700 mb-1">തീയതി (Date)</label>
+                <input type="date" id="dateInput" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+
+            <!-- Applicant Name -->
+            <div>
+                <label for="nameInput" class="block text-sm font-semibold text-gray-700 mb-1">പേര് (Name)</label>
+                <input type="text" id="nameInput" value="ഗീവർ കൊള്ളന്നൂർ യു" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+        </div>
+
+        <div class="mt-6 flex justify-end gap-3">
+            <button onclick="window.print()" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow transition duration-150 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                </svg>
+                പ്രൈന്റ് ചെയ്യുക / Print PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- Printable A4 Document Preview -->
+    <div class="a4-page">
+        <div>
+            <!-- Heading -->
+            <div class="doc-title">
+                സമർപ്പണം
+            </div>
+
+            <!-- Document Content Body -->
+            <div class="doc-content">
+                NSMP സ്കീമിന്റെ ഭാഗമായി <span id="outMonth" class="plain-text"></span> മാസത്തിൽ <span id="outDaysCount" class="plain-text"></span> ദിവസം (<span id="outDatesList" class="plain-text"></span>) ഫീൽഡിൽ പോയതിന് എനിക്ക് ലഭിക്കേണ്ട റിഫ്രഷ്മെന്റ് തുക അനുവദിക്കുന്നതിന് വേണ്ടമേൽ നടപടികൾ സ്വീകരിക്കണമെന്ന് അപേക്ഷിക്കുന്നു.
+            </div>
+
+            <!-- Document Footer (Place, Date on Left | Signature above Name on Right, Same Line) -->
+            <div class="doc-footer">
+                <div>
+                    <div>സ്ഥലം: <span id="outPlace" class="plain-text">തൃശ്ശൂർ</span></div>
+                    <div>തീയതി: <span id="outDate" class="plain-text"></span></div>
+                </div>
+                <div class="text-right">
+                   
+                    <div> <span id="outName" class="plain-text">ഗീവർ കൊള്ളന്നൂർ യു</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize default date to today
+        const dateInput = document.getElementById('dateInput');
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        dateInput.value = `${yyyy}-${mm}-${dd}`;
+
+        // Robust Date Formatting (DD/MM/YYYY)
+        function formatDateString(dateStr) {
+            if (!dateStr) return '';
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateStr;
+        }
+
+        // Format dates input string with month number suffix (e.g. "12, 14" -> "12/10, 14/10")
+        function formatDatesWithMonthSuffix(rawDatesStr, monthNum) {
+            if (!rawDatesStr.trim()) return '---';
+            
+            // Split by comma or space
+            const items = rawDatesStr.split(/[,,\s]+/);
+            
+            const formattedItems = items.map(item => {
+                const trimmed = item.trim();
+                if (!trimmed) return null;
+                // If the user already typed a slash (e.g., 12/10), keep it as is
+                if (trimmed.includes('/')) {
+                    return trimmed;
+                }
+                // Append month number suffix
+                return `${trimmed}/${monthNum}`;
+            }).filter(Boolean);
+
+            return formattedItems.join(', ');
+        }
+
+        // Live Update Function
+        function updatePreview() {
+            const monthSelect = document.getElementById('monthInput');
+            const selectedOption = monthSelect.options[monthSelect.selectedIndex];
+            const monthName = selectedOption.value;
+            const monthNum = selectedOption.getAttribute('data-num') || '10';
+
+            document.getElementById('outMonth').textContent = monthName;
+            document.getElementById('outDaysCount').textContent = document.getElementById('daysCountInput').value || '---';
+
+            // Apply Month Suffix to Specified Dates
+            const rawDates = document.getElementById('datesListInput').value;
+            document.getElementById('outDatesList').textContent = formatDatesWithMonthSuffix(rawDates, monthNum);
+
+            document.getElementById('outPlace').textContent = document.getElementById('placeInput').value || '';
+            document.getElementById('outName').textContent = document.getElementById('nameInput').value || 'ഗീവർ കൊള്ളന്നൂർ യു';
+            
+            const rawDate = document.getElementById('dateInput').value;
+            document.getElementById('outDate').textContent = formatDateString(rawDate);
+        }
+
+        // Attach Event Listeners
+        document.getElementById('monthInput').addEventListener('change', updatePreview);
+        document.getElementById('daysCountInput').addEventListener('input', updatePreview);
+        document.getElementById('datesListInput').addEventListener('input', updatePreview);
+        document.getElementById('placeInput').addEventListener('input', updatePreview);
+        document.getElementById('dateInput').addEventListener('change', updatePreview);
+        document.getElementById('nameInput').addEventListener('input', updatePreview);
+
+        // Initial setup
+        window.addEventListener('DOMContentLoaded', updatePreview);
+    </script>
+</body>
+</html>
