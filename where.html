@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Where is my soil</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for table */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="p-2.5 bg-indigo-600 text-white rounded-xl shadow-md shadow-indigo-100">
+                    <i data-lucide="database" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 tracking-tight">soil stack</h1>
+                    <p class="text-xs text-slate-500 font-medium">soil manager</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <button id="openGuideBtn" class="flex items-center gap-2 px-3.5 py-2 text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition duration-200">
+                    <i data-lucide="help-circle" class="w-4 h-4 text-indigo-600"></i>
+                    <span>GAS Setup Guide / ഗൈഡ്</span>
+                </button>
+                <div id="modeBadge" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                    <span id="modeText">Demo Mode (Local)</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+
+        <!-- API Connection Box -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm mb-8 transition-all">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex-grow">
+                    <label for="apiUrlInput" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
+                        Google Apps Script Web App URL
+                    </label>
+                    <div class="relative">
+                        <i data-lucide="link" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                        <input type="url" id="apiUrlInput" placeholder="https://script.google.com/macros/s/.../exec" 
+                            class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+                    </div>
+                </div>
+                <div class="flex items-end gap-2">
+                    <button id="saveUrlBtn" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm rounded-xl shadow-sm transition flex items-center gap-1.5 whitespace-nowrap">
+                        <i data-lucide="check" class="w-4 h-4"></i> Save URL
+                    </button>
+                    <button id="clearUrlBtn" class="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium text-sm rounded-xl transition whitespace-nowrap" title="Reset to Demo Mode">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+            <p class="text-xs text-slate-400 mt-2">Leave blank to test using Local Browser Storage. Enter your deployed Web App URL to sync with Google Sheet.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left Column: Add New Item Form -->
+            <div class="lg:col-span-4">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm sticky top-24">
+                    <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <i data-lucide="plus-circle" class="w-5 h-5 text-indigo-600"></i>
+                        Add New Entry
+                    </h2>
+                    
+                    <form id="addEntryForm" class="space-y-4">
+                        <div>
+                            <label for="addBlockName" class="block text-xs font-semibold text-slate-600 mb-1">Block Name *</label>
+                            <input type="text" id="addBlockName" required placeholder="e.g., A-Block, Main Wing"
+                                class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                        </div>
+
+                        <div>
+                            <label for="addNumber" class="block text-xs font-semibold text-slate-600 mb-1">Number / ID *</label>
+                            <input type="text" id="addNumber" required placeholder="e.g., 101, B-42"
+                                class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                        </div>
+
+                        <div>
+                            <label for="addStatus" class="block text-xs font-semibold text-slate-600 mb-1">Status *</label>
+                            <select id="addStatus" required class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white transition">
+                                <option value="" disabled selected>Select status...</option>
+                                <option value="Sreeni">Sreeni</option>
+                                <option value="Sajeev">Sajeev</option>
+                                <option value="Offic">Offic</option>
+                                <option value="Expos">Expos</option>
+                                <option value="Clear">Clear</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" id="submitAddBtn" class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm rounded-xl shadow-md shadow-indigo-100 transition flex items-center justify-center gap-2">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            <span>Save to Sheet</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right Column: Data Table -->
+            <div class="lg:col-span-8">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-full">
+                    
+                    <!-- Table Header Controls -->
+                    <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/50">
+                        <div class="relative flex-grow sm:max-w-xs">
+                            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                            <input type="text" id="searchInput" placeholder="Search entries..."
+                                class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white transition">
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <select id="filterStatus" class="px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                                <option value="ALL">All Statuses</option>
+                                <option value="Sreeni">Sreeni</option>
+                                <option value="Sajeev">Sajeev</option>
+                                <option value="Offic">Offic</option>
+                                <option value="Expos">Expos</option>
+                                <option value="Clear">Clear</option>
+                            </select>
+
+                            <button id="refreshBtn" class="p-2 border border-slate-200 hover:bg-slate-100 text-slate-600 rounded-xl transition" title="Refresh Data">
+                                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Table Container -->
+                    <div class="overflow-x-auto custom-scrollbar flex-grow">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100/70 border-b border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider">
+                                    <th class="p-4 pl-6">Block Name</th>
+                                    <th class="p-4">Number</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4 pr-6 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody" class="divide-y divide-slate-100 text-sm">
+                                <!-- Dynamic Rows Injected Here -->
+                            </tbody>
+                        </table>
+
+                        <!-- Empty State -->
+                        <div id="emptyState" class="hidden py-16 text-center">
+                            <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i data-lucide="inbox" class="w-6 h-6"></i>
+                            </div>
+                            <h3 class="text-slate-700 font-semibold text-base mb-1">No Records Found</h3>
+                            <p class="text-slate-400 text-xs">Add a new block entry or clear search filters.</p>
+                        </div>
+
+                        <!-- Loading State Spinner -->
+                        <div id="loadingState" class="py-16 text-center">
+                            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent mb-3"></div>
+                            <p class="text-slate-500 text-xs font-medium">Fetching sheet data...</p>
+                        </div>
+                    </div>
+
+                    <!-- Table Footer Stats -->
+                    <div class="p-4 border-t border-slate-100 bg-slate-50/50 text-xs text-slate-500 flex justify-between items-center">
+                        <span>Total Items: <strong id="totalCount" class="text-slate-800">0</strong></span>
+                        <span id="lastSyncedText">Sync Ready</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform transition-all">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <i data-lucide="edit-3" class="w-5 h-5 text-indigo-600"></i> Edit Block Record
+                </h3>
+                <button id="closeEditModal" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form id="editEntryForm" class="space-y-4">
+                <input type="hidden" id="editRowId">
+
+                <div>
+                    <label for="editBlockName" class="block text-xs font-semibold text-slate-600 mb-1">Block Name *</label>
+                    <input type="text" id="editBlockName" required
+                        class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+
+                <div>
+                    <label for="editNumber" class="block text-xs font-semibold text-slate-600 mb-1">Number / ID *</label>
+                    <input type="text" id="editNumber" required
+                        class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+
+                <div>
+                    <label for="editStatus" class="block text-xs font-semibold text-slate-600 mb-1">Status *</label>
+                    <select id="editStatus" required class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                        <option value="Sreeni">Sreeni</option>
+                        <option value="Sajeev">Sajeev</option>
+                        <option value="Offic">Offic</option>
+                        <option value="Expos">Expos</option>
+                        <option value="Clear">Clear</option>
+                    </select>
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button type="button" id="cancelEditBtn" class="w-1/2 py-2.5 border border-slate-300 text-slate-700 font-medium text-sm rounded-xl hover:bg-slate-50 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="w-1/2 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm rounded-xl transition flex items-center justify-center gap-1.5">
+                        <i data-lucide="check" class="w-4 h-4"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- GAS Setup Guide Modal -->
+    <div id="guideModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-100">
+            <!-- Modal Header -->
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900">Google Sheets Integration Setup</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Google Apps Script ബാക്ക്എൻഡ് സെറ്റ് ചെയ്യാനുള്ള ഗൈഡ്</p>
+                </div>
+                <button id="closeGuideModal" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content Body -->
+            <div class="p-6 overflow-y-auto space-y-6 text-sm custom-scrollbar">
+                
+                <!-- Malayalam Instructions -->
+                <div class="bg-indigo-50/50 border border-indigo-100 rounded-xl p-4 space-y-2">
+                    <h4 class="font-bold text-indigo-900 flex items-center gap-2">
+                        <i data-lucide="globe" class="w-4 h-4 text-indigo-600"></i> മലയാളം നിർദ്ദേശങ്ങൾ (Steps in Malayalam):
+                    </h4>
+                    <ol class="list-decimal pl-5 space-y-1 text-slate-700 text-xs sm:text-sm">
+                        <li>ഒരു പുതിയ <strong>Google Sheet</strong> ഉണ്ടാക്കുക.</li>
+                        <li>ആദ്യ വരിയിൽ (Row 1) തലക്കെട്ടുകൾ നൽക്കുക: <code>Block Name</code> (A1), <code>Number</code> (B1), <code>Status</code> (C1).</li>
+                        <li>മുകളിൽ <strong>Extensions &gt; Apps Script</strong> ഓപ്പൺ ചെയ്യുക.</li>
+                        <li>താഴെ കാണുന്ന <strong>Code.gs</strong> പൂർണ്ണമായും കോപ്പി ചെയ്ത് Apps Script-ൽ പേസ്റ്റ് ചെയ്യുക.</li>
+                        <li>മുകളിൽ വലതുവശത്തുള്ള <strong>Deploy &gt; New deployment</strong> ക്ലിക്ക് ചെയ്യുക.</li>
+                        <li>Select type എന്നതിൽ <strong>Web App</strong> തിരഞ്ഞെടുക്കുക.</li>
+                        <li><strong>Who has access:</strong> എന്നത് <strong>"Anyone"</strong> എന്ന് നിർബന്ധമായും മാറ്റുക.</li>
+                        <li><strong>Deploy</strong> അമർത്തുമ്പോൾ കിട്ടുന്ന <strong>Web App URL</strong> കോപ്പി ചെയ്ത് ഈ വെബ്‌സൈറ്റിലെ API URL ബോക്‌സിൽ പേസ്റ്റ് ചെയ്യുക!</li>
+                    </ol>
+                </div>
+
+                <!-- Code Copy Box -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-mono text-xs font-bold text-slate-600">Code.gs (Google Apps Script Code)</span>
+                        <button id="copyGasCodeBtn" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-1 bg-indigo-50 px-2.5 py-1 rounded-md">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Script Code
+                        </button>
+                    </div>
+                    <pre class="bg-slate-900 text-slate-100 p-4 rounded-xl text-xs font-mono overflow-x-auto leading-relaxed custom-scrollbar selection:bg-indigo-500"><code id="gasCodeText">// Google Apps Script Code for Google Sheet
+function doGet(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = sheet.getDataRange().getValues();
+  var rows = [];
+  
+  // Skip Header Row
+  for (var i = 1; i < data.length; i++) {
+    rows.push({
+      id: i + 1, // Row index in Google Sheet
+      blockName: data[i][0] || "",
+      number: data[i][1] || "",
+      status: data[i][2] || ""
+    });
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({ status: "success", data: rows }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var contents = JSON.parse(e.postData.contents);
+    var action = contents.action;
+    
+    if (action === "CREATE") {
+      sheet.appendRow([contents.blockName, contents.number, contents.status]);
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Added successfully" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    } 
+    
+    else if (action === "UPDATE") {
+      var rowIndex = parseInt(contents.id);
+      sheet.getRange(rowIndex, 1).setValue(contents.blockName);
+      sheet.getRange(rowIndex, 2).setValue(contents.number);
+      sheet.getRange(rowIndex, 3).setValue(contents.status);
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Updated successfully" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    } 
+    
+    else if (action === "DELETE") {
+      var rowIndex = parseInt(contents.id);
+      sheet.deleteRow(rowIndex);
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Deleted successfully" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end">
+                <button id="closeGuideModalBottom" class="px-5 py-2 bg-slate-800 text-white font-medium text-sm rounded-xl hover:bg-slate-900 transition">
+                    Got it!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Box -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 ease-out pointer-events-none">
+        <div id="toastContent" class="bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 text-sm font-medium">
+            <i id="toastIcon" data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
+            <span id="toastMessage">Notification message</span>
+        </div>
+    </div>
+
+    <!-- Application Logic Javascript -->
+    <script>
+        // Default Mock Initial Data for Demo Mode
+        const initialMockData = [
+            { id: 2, blockName: "A Block", number: "101", status: "Sreeni" },
+            { id: 3, blockName: "B Block", number: "204", status: "Sajeev" },
+            { id: 4, blockName: "C Block", number: "305", status: "Offic" },
+            { id: 5, blockName: "West Wing", number: "012", status: "Expos" },
+            { id: 6, blockName: "East Tower", number: "902", status: "Clear" }
+        ];
+
+        // State Management
+        let records = [];
+        let apiUrl = localStorage.getItem("gas_api_url") || "";
+
+        // Status Badge Color Mappings
+        const statusColors = {
+            'Sreeni': 'bg-blue-100 text-blue-800 border-blue-200',
+            'Sajeev': 'bg-purple-100 text-purple-800 border-purple-200',
+            'Offic': 'bg-amber-100 text-amber-800 border-amber-200',
+            'Expos': 'bg-rose-100 text-rose-800 border-rose-200',
+            'Clear': 'bg-emerald-100 text-emerald-800 border-emerald-200'
+        };
+
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // DOM Load Initializer
+        document.addEventListener("DOMContentLoaded", () => {
+            if (apiUrl) {
+                document.getElementById("apiUrlInput").value = apiUrl;
+                updateModeBadge(true);
+            } else {
+                updateModeBadge(false);
+            }
+            
+            fetchRecords();
+            setupEventListeners();
+        });
+
+        // Event Listeners Setup
+        function setupEventListeners() {
+            // API Url Handlers
+            document.getElementById("saveUrlBtn").addEventListener("click", saveApiUrl);
+            document.getElementById("clearUrlBtn").addEventListener("click", clearApiUrl);
+
+            // CRUD Forms
+            document.getElementById("addEntryForm").addEventListener("submit", handleAddEntry);
+            document.getElementById("editEntryForm").addEventListener("submit", handleEditEntry);
+
+            // Search & Filters
+            document.getElementById("searchInput").addEventListener("input", renderTable);
+            document.getElementById("filterStatus").addEventListener("change", renderTable);
+            document.getElementById("refreshBtn").addEventListener("click", () => fetchRecords(true));
+
+            // Modals
+            document.getElementById("openGuideBtn").addEventListener("click", () => toggleModal("guideModal", true));
+            document.getElementById("closeGuideModal").addEventListener("click", () => toggleModal("guideModal", false));
+            document.getElementById("closeGuideModalBottom").addEventListener("click", () => toggleModal("guideModal", false));
+            document.getElementById("closeEditModal").addEventListener("click", () => toggleModal("editModal", false));
+            document.getElementById("cancelEditBtn").addEventListener("click", () => toggleModal("editModal", false));
+
+            // Copy Code Button
+            document.getElementById("copyGasCodeBtn").addEventListener("click", copyGasScript);
+        }
+
+        // Toggle UI Mode Badge
+        function updateModeBadge(isLive) {
+            const badge = document.getElementById("modeBadge");
+            const text = document.getElementById("modeText");
+            if (isLive) {
+                badge.className = "px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1.5";
+                text.textContent = "Google Sheet Live";
+            } else {
+                badge.className = "px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1.5";
+                text.textContent = "Demo Mode (Local)";
+            }
+        }
+
+        // Save Custom GAS API URL
+        function saveApiUrl() {
+            const input = document.getElementById("apiUrlInput").value.trim();
+            if (input && !input.startsWith("http")) {
+                showToast("Please enter a valid HTTP/HTTPS URL", "error");
+                return;
+            }
+            apiUrl = input;
+            if (apiUrl) {
+                localStorage.setItem("gas_api_url", apiUrl);
+                updateModeBadge(true);
+                showToast("Google Sheet URL Connected!");
+            } else {
+                localStorage.removeItem("gas_api_url");
+                updateModeBadge(false);
+                showToast("Switched to Demo Mode");
+            }
+            fetchRecords(true);
+        }
+
+        // Clear API URL
+        function clearApiUrl() {
+            document.getElementById("apiUrlInput").value = "";
+            apiUrl = "";
+            localStorage.removeItem("gas_api_url");
+            updateModeBadge(false);
+            showToast("Reset to Demo Mode");
+            fetchRecords(true);
+        }
+
+        // READ: Fetch All Records
+        async function fetchRecords(showNotice = false) {
+            showLoading(true);
+
+            if (!apiUrl) {
+                // Demo Mode Fallback using LocalStorage
+                setTimeout(() => {
+                    const saved = localStorage.getItem("demo_block_records");
+                    if (saved) {
+                        records = JSON.parse(saved);
+                    } else {
+                        records = [...initialMockData];
+                        localStorage.setItem("demo_block_records", JSON.stringify(records));
+                    }
+                    showLoading(false);
+                    renderTable();
+                    if (showNotice) showToast("Refreshed Demo Data");
+                }, 400);
+                return;
+            }
+
+            try {
+                const response = await fetch(apiUrl);
+                const result = await response.json();
+                if (result.status === "success") {
+                    records = result.data;
+                    renderTable();
+                    if (showNotice) showToast("Synced with Google Sheet");
+                } else {
+                    showToast("Error reading Google Sheet data", "error");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Failed to connect to Google Sheet URL", "error");
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // CREATE: Add New Record
+        async function handleAddEntry(e) {
+            e.preventDefault();
+            const blockName = document.getElementById("addBlockName").value.trim();
+            const number = document.getElementById("addNumber").value.trim();
+            const status = document.getElementById("addStatus").value;
+
+            if (!blockName || !number || !status) {
+                showToast("Please fill all required fields", "error");
+                return;
+            }
+
+            const submitBtn = document.getElementById("submitAddBtn");
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<div class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div> Saving...`;
+
+            if (!apiUrl) {
+                // Demo Mode Create
+                const newId = records.length ? Math.max(...records.map(r => r.id)) + 1 : 2;
+                const newRecord = { id: newId, blockName, number, status };
+                records.push(newRecord);
+                localStorage.setItem("demo_block_records", JSON.stringify(records));
+                
+                resetAddForm(submitBtn);
+                renderTable();
+                showToast("Entry added locally!");
+                return;
+            }
+
+            try {
+                const payload = { action: "CREATE", blockName, number, status };
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    body: JSON.stringify(payload)
+                });
+                const res = await response.json();
+                
+                if (res.status === "success") {
+                    showToast("Added to Google Sheet!");
+                    resetAddForm(submitBtn);
+                    fetchRecords();
+                } else {
+                    showToast("Failed to save: " + res.message, "error");
+                    resetAddForm(submitBtn);
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Error adding record", "error");
+                resetAddForm(submitBtn);
+            }
+        }
+
+        function resetAddForm(btn) {
+            document.getElementById("addEntryForm").reset();
+            btn.disabled = false;
+            btn.innerHTML = `<i data-lucide="send" class="w-4 h-4"></i> Save to Sheet`;
+            lucide.createIcons();
+        }
+
+        // UPDATE: Submit Edit Form
+        async function handleEditEntry(e) {
+            e.preventDefault();
+            const id = document.getElementById("editRowId").value;
+            const blockName = document.getElementById("editBlockName").value.trim();
+            const number = document.getElementById("editNumber").value.trim();
+            const status = document.getElementById("editStatus").value;
+
+            toggleModal("editModal", false);
+            showLoading(true);
+
+            if (!apiUrl) {
+                // Demo Mode Edit
+                const index = records.findIndex(r => r.id == id);
+                if (index !== -1) {
+                    records[index] = { id: parseInt(id), blockName, number, status };
+                    localStorage.setItem("demo_block_records", JSON.stringify(records));
+                    showToast("Updated successfully!");
+                }
+                showLoading(false);
+                renderTable();
+                return;
+            }
+
+            try {
+                const payload = { action: "UPDATE", id, blockName, number, status };
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    body: JSON.stringify(payload)
+                });
+                const res = await response.json();
+
+                if (res.status === "success") {
+                    showToast("Google Sheet updated!");
+                    fetchRecords();
+                } else {
+                    showToast("Update failed: " + res.message, "error");
+                    showLoading(false);
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Error updating entry", "error");
+                showLoading(false);
+            }
+        }
+
+        // DELETE: Remove Record
+        async function deleteRecord(id) {
+            if (!confirm("Are you sure you want to delete this record?")) return;
+
+            showLoading(true);
+
+            if (!apiUrl) {
+                // Demo Mode Delete
+                records = records.filter(r => r.id != id);
+                localStorage.setItem("demo_block_records", JSON.stringify(records));
+                showToast("Record deleted!");
+                showLoading(false);
+                renderTable();
+                return;
+            }
+
+            try {
+                const payload = { action: "DELETE", id };
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    body: JSON.stringify(payload)
+                });
+                const res = await response.json();
+
+                if (res.status === "success") {
+                    showToast("Deleted from Google Sheet!");
+                    fetchRecords();
+                } else {
+                    showToast("Delete failed: " + res.message, "error");
+                    showLoading(false);
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Error deleting record", "error");
+                showLoading(false);
+            }
+        }
+
+        // Open Edit Modal
+        function openEditModal(id) {
+            const item = records.find(r => r.id == id);
+            if (!item) return;
+
+            document.getElementById("editRowId").value = item.id;
+            document.getElementById("editBlockName").value = item.blockName;
+            document.getElementById("editNumber").value = item.number;
+            document.getElementById("editStatus").value = item.status;
+
+            toggleModal("editModal", true);
+        }
+
+        // Render Table Rows
+        function renderTable() {
+            const tbody = document.getElementById("tableBody");
+            const emptyState = document.getElementById("emptyState");
+            const searchVal = document.getElementById("searchInput").value.toLowerCase();
+            const filterVal = document.getElementById("filterStatus").value;
+
+            // Filter logic
+            const filtered = records.filter(item => {
+                const matchesSearch = item.blockName.toLowerCase().includes(searchVal) ||
+                                      item.number.toLowerCase().includes(searchVal);
+                const matchesFilter = filterVal === "ALL" || item.status === filterVal;
+                return matchesSearch && matchesFilter;
+            });
+
+            document.getElementById("totalCount").textContent = filtered.length;
+            document.getElementById("lastSyncedText").textContent = `Updated ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+
+            tbody.innerHTML = "";
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove("hidden");
+                return;
+            } else {
+                emptyState.classList.add("hidden");
+            }
+
+            filtered.forEach(item => {
+                const badgeStyle = statusColors[item.status] || 'bg-slate-100 text-slate-800 border-slate-200';
+                
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-slate-50/80 transition duration-150";
+                tr.innerHTML = `
+                    <td class="p-4 pl-6 font-semibold text-slate-900">${escapeHtml(item.blockName)}</td>
+                    <td class="p-4 font-mono text-slate-600">${escapeHtml(item.number)}</td>
+                    <td class="p-4">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${badgeStyle}">
+                            ${escapeHtml(item.status)}
+                        </span>
+                    </td>
+                    <td class="p-4 pr-6 text-right space-x-1 whitespace-nowrap">
+                        <button onclick="openEditModal('${item.id}')" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="Edit">
+                            <i data-lucide="edit-2" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="deleteRecord('${item.id}')" class="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Delete">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            lucide.createIcons();
+        }
+
+        // Helper UI Utilities
+        function showLoading(isLoading) {
+            const loadingState = document.getElementById("loadingState");
+            const emptyState = document.getElementById("emptyState");
+            if (isLoading) {
+                loadingState.classList.remove("hidden");
+                emptyState.classList.add("hidden");
+            } else {
+                loadingState.classList.add("hidden");
+            }
+        }
+
+        function toggleModal(modalId, show) {
+            const modal = document.getElementById(modalId);
+            if (show) {
+                modal.classList.remove("hidden");
+            } else {
+                modal.classList.add("hidden");
+            }
+        }
+
+        function showToast(message, type = "success") {
+            const toast = document.getElementById("toast");
+            const toastMessage = document.getElementById("toastMessage");
+            const toastIcon = document.getElementById("toastIcon");
+
+            toastMessage.textContent = message;
+            
+            if (type === "error") {
+                toastIcon.setAttribute("data-lucide", "alert-circle");
+                toastIcon.className = "w-5 h-5 text-rose-400";
+            } else {
+                toastIcon.setAttribute("data-lucide", "check-circle");
+                toastIcon.className = "w-5 h-5 text-emerald-400";
+            }
+            lucide.createIcons();
+
+            toast.classList.remove("translate-y-20", "opacity-0");
+            
+            setTimeout(() => {
+                toast.classList.add("translate-y-20", "opacity-0");
+            }, 3000);
+        }
+
+        function copyGasScript() {
+            const code = document.getElementById("gasCodeText").innerText;
+            const textarea = document.createElement("textarea");
+            textarea.value = code;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textarea);
+            showToast("Code copied to clipboard!");
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
