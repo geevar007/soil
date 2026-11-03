@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Refresh sub</title>
+    <title>സമർപ്പണം</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts for Malayalam -->
@@ -18,46 +18,18 @@
             color: #111827;
         }
 
-        /* A4 Page Dimensions and Layout */
+        /* A4 Page Dimensions & Layout for Preview */
         .a4-page {
             width: 210mm;
             min-height: 297mm;
             padding: 25mm 20mm 20mm 25mm;
-            margin: 20px auto;
-            background: white;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            background: #ffffff;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
-        }
-
-        /* Document Body Styling */
-        .doc-title {
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 1.5rem; /* One line space after heading */
-        }
-
-        .doc-content {
-            font-size: 21px;
-            line-height: 1.8;
-            text-align: justify;
-            margin-bottom: 1rem; /* Single line space between matter and footer */
-        }
-
-        .doc-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end; /* Align bottom items on the same line */
-            font-size: 21px;
-            line-height: 1.8;
-        }
-
-        .plain-text {
-            font-weight: normal !important;
-            text-decoration: none !important;
-            border-bottom: none !important;
+            justify-content: flex-start;
         }
 
         /* Print Specific CSS */
@@ -66,214 +38,271 @@
                 size: A4 portrait;
                 margin: 0;
             }
-            body {
-                background: white;
-                margin: 0;
-                padding: 0;
+            html, body {
+                background: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
             .no-print {
                 display: none !important;
             }
-            .a4-page {
-                width: 210mm;
-                height: 297mm;
-                margin: 0;
-                padding: 25mm 20mm 20mm 25mm;
-                box-shadow: none;
-                border: none;
-                page-break-after: avoid;
+            .a4-container {
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
             }
+            .a4-page {
+                width: 210mm !important;
+                height: 297mm !important;
+                min-height: 297mm !important;
+                margin: 0 !important;
+                padding: 25mm 20mm 20mm 25mm !important;
+                box-shadow: none !important;
+                border: none !important;
+                page-break-after: avoid;
+                page-break-inside: avoid;
+            }
+    
         }
     </style>
 </head>
-<body class="min-h-screen pb-10">
+<body class="min-h-screen flex flex-col">
 
-    <!-- Control Panel / Input Form (Hidden when printing) -->
-    <div class="no-print max-w-4xl mx-auto my-6 p-6 bg-white rounded-xl shadow-md border border-gray-200">
-        <h2 class="text-xl font-bold text-indigo-700 mb-4 flex items-center gap-2">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-            </svg>
-            വിവരങ്ങൾ നൽകുക
-        </h2>
+  
+
+    <!-- Main Container -->
+    <div class="flex-grow container mx-auto p-4 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Month Selection -->
-            <div>
-                <label for="monthInput" class="block text-sm font-semibold text-gray-700 mb-1">മാസം (Month)</label>
-                <select id="monthInput" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
-                    <option value="ജനുവരി" data-num="01">01 - ജനുവരി</option>
-                    <option value="ഫെബ്രുവരി" data-num="02">02 - ഫെബ്രുവരി</option>
-                    <option value="മാർച്ച്" data-num="03">03 - മാർച്ച്</option>
-                    <option value="ഏപ്രിൽ" data-num="04">04 - ഏപ്രിൽ</option>
-                    <option value="മെയ്" data-num="05">05 - മെയ്</option>
-                    <option value="ജൂൺ" data-num="06">06 - ജൂൺ</option>
-                    <option value="ജൂലൈ" data-num="07">07 - ജൂലൈ</option>
-                    <option value="ഓഗസ്റ്റ്" data-num="08">08 - ഓഗസ്റ്റ്</option>
-                    <option value="സെപ്റ്റംബർ" data-num="09">09 - സെപ്റ്റംബർ</option>
-                    <option value="ഒക്ടോബർ" data-num="10" selected>10 - ഒക്ടോബർ</option>
-                    <option value="നവംബർ" data-num="11">11 - നവംബർ</option>
-                    <option value="ഡിസംബർ" data-num="12">12 - ഡിസംബർ</option>
-                </select>
+        <!-- Controls Panel (Screen Only) -->
+        <div class="no-print lg:col-span-4 bg-white p-6 rounded-2xl shadow-md border border-gray-200 sticky top-6">
+            <div class="flex justify-between items-center mb-5 pb-3 border-b border-gray-100">
+                <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                    വിവരങ്ങൾ നൽകുക (Inputs)
+                </h2>
+                <span id="saveStatus" class="text-xs text-emerald-600 font-medium hidden">Auto Saved</span>
             </div>
 
-            <!-- Total Field Days -->
-            <div>
-                <label for="daysCountInput" class="block text-sm font-semibold text-gray-700 mb-1">ആകെ ദിവസങ്ങൾ (Total Days)</label>
-                <input type="text" id="daysCountInput" value="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-            </div>
-
-            <!-- Year Input -->
-            <div>
-                <label for="yearInput" class="block text-sm font-semibold text-gray-700 mb-1">വർഷം (Year)</label>
-                <input type="number" id="yearInput" value="2026" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-            </div>
-
-            <!-- Included Dates (Numbers only, month and year suffix added dynamically) -->
-            <div>
-                <label for="datesListInput" class="block text-sm font-semibold text-gray-700 mb-1">ഉൾപ്പെട്ട തീയതികൾ (Dates)</label>
-                <input type="text" id="datesListInput" value="12, 14, 15, 18, 20" placeholder="eg: 12, 14, 15" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-            </div>
-
-            <!-- Place Input -->
-            <div>
-                <label for="placeInput" class="block text-sm font-semibold text-gray-700 mb-1">സ്ഥലം (Place)</label>
-                <input type="text" id="placeInput" value="തൃശ്ശൂർ" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-            </div>
-
-            <!-- Submission Date -->
-            <div>
-                <label for="dateInput" class="block text-sm font-semibold text-gray-700 mb-1">തീയതി (Date)</label>
-                <input type="date" id="dateInput" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-            </div>
-
-            <!-- Applicant Name -->
-            <div>
-                <label for="nameInput" class="block text-sm font-semibold text-gray-700 mb-1">പേര് (Name)</label>
-                <input type="text" id="nameInput" value="ഗീവർ കൊള്ളന്നൂർ യു" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-            </div>
-        </div>
-
-        <div class="mt-6 flex justify-end gap-3">
-            <button onclick="window.print()" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow transition duration-150 flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-                </svg>
-                പ്രൈന്റ് ചെയ്യുക / Print PDF
-            </button>
-        </div>
-    </div>
-
-    <!-- Printable A4 Document Preview -->
-    <div class="a4-page">
-        <div>
-            <!-- Heading -->
-            <div class="doc-title">
-                സമർപ്പണം
-            </div>
-
-            <!-- Document Content Body -->
-            <div class="doc-content">
-                NSMP സ്കീമിന്റെ ഭാഗമായി <span id="outYearMonth" class="plain-text"></span> മാസത്തിൽ <span id="outDaysCount" class="plain-text"></span> ദിവസം (<span id="outDatesList" class="plain-text"></span>) ഫീൽഡിൽ പോയതിന് എനിക്ക് ലഭിക്കേണ്ട റിഫ്രഷ്മെന്റ് തുക അനുവദിക്കുന്നതിന് വേണ്ട മേൽ നടപടികൾ സ്വീകരിക്കണമെന്ന് അപേക്ഷിക്കുന്നു.
-            </div>
-
-            <!-- Document Footer (Place, Date on Left | Signature above Name on Right, Same Line) -->
-            <div class="doc-footer">
+            <form id="submissionForm" onsubmit="event.preventDefault();" class="space-y-4">
+                
+                <!-- Year Input -->
                 <div>
-                    <div>സ്ഥലം: <span id="outPlace" class="plain-text">തൃശ്ശൂർ</span></div>
-                    <div>തീയതി: <span id="outDate" class="plain-text"></span></div>
+                    <label for="yearInput" class="block text-sm font-semibold text-gray-700 mb-1">വർഷം (Year)</label>
+                    <input type="number" id="yearInput" class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all" placeholder="2026">
                 </div>
-                <div class="text-right">
-                 
-                    <div><span id="outName" class="plain-text">ഗീവർ കൊള്ളന്നൂർ യു</span></div>
+
+                <!-- Month Selection -->
+                <div>
+                    <label for="monthInput" class="block text-sm font-semibold text-gray-700 mb-1">മാസം (Month)</label>
+                    <select id="monthInput" class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all bg-white">
+                        <option value="ജനുവരി" data-num="01">01 - ജനുവരി</option>
+                        <option value="ഫെബ്രുവരി" data-num="02">02 - ഫെബ്രുവരി</option>
+                        <option value="മാർച്ച്" data-num="03">03 - മാർച്ച്</option>
+                        <option value="ഏപ്രിൽ" data-num="04">04 - ഏപ്രിൽ</option>
+                        <option value="മേയ്" data-num="05">05 - മേയ്</option>
+                        <option value="ജൂൺ" data-num="06">06 - ജൂൺ</option>
+                        <option value="ജൂലൈ" data-num="07">07 - ജൂലൈ</option>
+                        <option value="ഓഗസ്റ്റ്" data-num="08">08 - ഓഗസ്റ്റ്</option>
+                        <option value="സെപ്റ്റംബർ" data-num="09">09 - സെപ്റ്റംബർ</option>
+                        <option value="ഒക്ടോബർ" data-num="10">10 - ഒക്ടോബർ</option>
+                        <option value="നവംബർ" data-num="11">11 - നവംബർ</option>
+                        <option value="ഡിസംബർ" data-num="12">12 - ഡിസംബർ</option>
+                    </select>
                 </div>
+
+                <!-- Field Dates Input -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label for="datesInput" class="block text-sm font-semibold text-gray-700">ഫീൽഡ് തീയതികൾ (Dates)</label>
+                        <span class="text-xs bg-indigo-50 text-indigo-700 font-semibold px-2 py-0.5 rounded-full" id="calculatedDaysBadge">ആകെ: 0 ദിവസം</span>
+                    </div>
+                    <input type="text" id="datesInput" class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all" placeholder="ഉദാ: 5, 12, 18, 24">
+                    <p class="text-xs text-gray-500 mt-1">തീയതികൾ കോമ (,) ഇട്ട് നൽകുക.</p>
+                </div>
+
+                <!-- Place Input -->
+                <div>
+                    <label for="placeInput" class="block text-sm font-semibold text-gray-700 mb-1">സ്ഥലം (Place)</label>
+                    <input type="text" id="placeInput" class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all" placeholder="തൃശ്ശൂർ">
+                </div>
+
+                <!-- Submission Date Input -->
+                <div>
+                    <label for="docDateInput" class="block text-sm font-semibold text-gray-700 mb-1">സമർപ്പിക്കുന്ന തീയതി (Date)</label>
+                    <input type="text" id="docDateInput" class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all" placeholder="DD/MM/YYYY">
+                </div>
+
+                <!-- Applicant Name Input -->
+                <div>
+                    <label for="nameInput" class="block text-sm font-semibold text-gray-700 mb-1">പേര് (Applicant Name)</label>
+                    <input type="text" id="nameInput" class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all" placeholder="ഗീവർ കൊള്ളന്നൂർ യു">
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="pt-2 flex gap-3">
+                    <button type="button" onclick="resetDefaults()" class="w-1/2 py-2.5 px-4 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-all text-center">
+                        Reset Defaults
+                    </button>
+                    <button type="button" onclick="window.print()" class="w-1/2 py-2.5 px-4 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-all text-center">
+                        Print Document
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- A4 Document Preview Section -->
+        <div class="lg:col-span-8 flex justify-center w-full a4-container">
+            <div class="a4-page">
+                
+                <!-- Heading with exactly 1 line space below -->
+                <div class="text-center font-bold text-2xl tracking-wide text-gray-900 mb-6">
+                    സമർപ്പണം
+                </div>
+
+                <!-- Main Content Body -->
+                <div class="text-justify text-lg leading-loose text-gray-900 mb-4">
+                    NSMP സ്കീമിന്റെ ഭാ​ഗമായി <span id="outYear"></span> <span id="outMonth"></span> മാസത്തിൽ <span id="outTotalDays">0</span> ദിവസം (<span id="outFormattedDates"></span>) ഫീൽ‍ഡിൽ പോയതിന് എനിക്ക് ലഭിക്കേണ്ട റിഫ്രഷ്മെന്റ് തുക അനുവദിക്കുന്നതിന് വേണ്ട മേൽ നടപടികൾ സ്വീകരിക്കണമെന്ന് അപേക്ഷിക്കുന്നു.
+                </div>
+
+                <!-- Footer Block (Exactly 1 line space after matter, Place/Date left, Name right aligned on exact same line) -->
+                <div class="flex justify-between items-end text-base text-gray-900 pt-1">
+                    <div>
+                        <div>സ്ഥലം: <span id="outPlace"></span></div>
+                        <div>തീയതി: <span id="outDocDate"></span></div>
+                    </div>
+                    <div class="text-right">
+                        <span id="outName"></span>
+                    </div>
+                </div>
+
             </div>
         </div>
+
     </div>
 
+    <!-- Application Script -->
     <script>
-        // Initialize default date to today
-        const dateInput = document.getElementById('dateInput');
+        // DOM Elements
         const yearInput = document.getElementById('yearInput');
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getDate()).padStart(2, '0');
-        
-        dateInput.value = `${yyyy}-${mm}-${dd}`;
-        yearInput.value = yyyy;
+        const monthInput = document.getElementById('monthInput');
+        const datesInput = document.getElementById('datesInput');
+        const placeInput = document.getElementById('placeInput');
+        const docDateInput = document.getElementById('docDateInput');
+        const nameInput = document.getElementById('nameInput');
 
-        // Robust Date Formatting (DD/MM/YYYY)
-        function formatDateString(dateStr) {
-            if (!dateStr) return '';
-            const parts = dateStr.split('-');
-            if (parts.length === 3) {
-                return `${parts[2]}/${parts[1]}/${parts[0]}`;
-            }
-            return dateStr;
+        const outYear = document.getElementById('outYear');
+        const outMonth = document.getElementById('outMonth');
+        const outTotalDays = document.getElementById('outTotalDays');
+        const outFormattedDates = document.getElementById('outFormattedDates');
+        const outPlace = document.getElementById('outPlace');
+        const outDocDate = document.getElementById('outDocDate');
+        const outName = document.getElementById('outName');
+        const calculatedDaysBadge = document.getElementById('calculatedDaysBadge');
+        const saveStatus = document.getElementById('saveStatus');
+
+        // Get current date formatted in DD/MM/YYYY
+        function getCurrentFormattedDate() {
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const yyyy = today.getFullYear();
+            return `${dd}/${mm}/${yyyy}`;
         }
 
-        // Format dates input string with full DD/MM/YYYY suffix
-        function formatDatesWithFullSuffix(rawDatesStr, monthNum, yearNum) {
-            if (!rawDatesStr.trim()) return '---';
+        // Initialize values from localStorage or set defaults
+        function initData() {
+            const currentYear = new Date().getFullYear();
             
-            // Split by comma or space
-            const items = rawDatesStr.split(/[,,\s]+/);
+            yearInput.value = localStorage.getItem('nsmp_year') || currentYear;
+            monthInput.value = localStorage.getItem('nsmp_month') || 'ഒക്ടോബർ';
+            datesInput.value = localStorage.getItem('nsmp_dates') || '5, 12, 18, 24';
+            placeInput.value = localStorage.getItem('nsmp_place') || 'തൃശ്ശൂർ';
+            docDateInput.value = localStorage.getItem('nsmp_doc_date') || getCurrentFormattedDate();
+            nameInput.value = localStorage.getItem('nsmp_name') || 'ഗീവർ കൊള്ളന്നൂർ യു';
+
+            updateDocument();
+        }
+
+        // Update preview dynamically
+        function updateDocument() {
+            const yearVal = yearInput.value.trim();
+            const monthOption = monthInput.options[monthInput.selectedIndex];
+            const monthVal = monthInput.value;
+            const monthNum = monthOption ? monthOption.getAttribute('data-num') : '01';
+
+            // Parse dates input and format each with /MM/YYYY suffix
+            const rawDatesStr = datesInput.value.trim();
+            let dateTokens = rawDatesStr ? rawDatesStr.split(',').map(d => d.trim()).filter(d => d.length > 0) : [];
             
-            const formattedItems = items.map(item => {
-                const trimmed = item.trim();
-                if (!trimmed) return null;
-                // If user typed a slash twice (full date), leave it as is
-                if ((trimmed.match(/\//g) || []).length >= 2) {
-                    return trimmed;
+            let formattedDatesArr = [];
+            dateTokens.forEach(token => {
+                // Ensure single/double digits are padded
+                const cleanDay = token.replace(/[^0-9]/g, '');
+                if (cleanDay) {
+                    const paddedDay = cleanDay.padStart(2, '0');
+                    formattedDatesArr.push(`${paddedDay}/${monthNum}/${yearVal}`);
+                } else if (token) {
+                    formattedDatesArr.push(token);
                 }
-                // If user entered DD/MM, append year
-                if (trimmed.includes('/')) {
-                    return `${trimmed}/${yearNum}`;
-                }
-                // Append month number and year suffix (DD/MM/YYYY)
-                return `${trimmed}/${monthNum}/${yearNum}`;
-            }).filter(Boolean);
+            });
 
-            return formattedItems.join(', ');
+            const totalDaysCount = dateTokens.length;
+
+            // Output to preview DOM elements
+            outYear.textContent = yearVal;
+            outMonth.textContent = monthVal;
+            outTotalDays.textContent = totalDaysCount;
+            outFormattedDates.textContent = formattedDatesArr.join(', ');
+            outPlace.textContent = placeInput.value.trim();
+            outDocDate.textContent = docDateInput.value.trim();
+            outName.textContent = nameInput.value.trim();
+
+            calculatedDaysBadge.textContent = `ആകെ: ${totalDaysCount} ദിവസം`;
+
+            // Save to localStorage
+            saveToLocalStorage();
         }
 
-        // Live Update Function
-        function updatePreview() {
-            const monthSelect = document.getElementById('monthInput');
-            const selectedOption = monthSelect.options[monthSelect.selectedIndex];
-            const monthName = selectedOption.value;
-            const monthNum = selectedOption.getAttribute('data-num') || '10';
-            const yearVal = document.getElementById('yearInput').value || yyyy;
+        // Save preferences
+        function saveToLocalStorage() {
+            localStorage.setItem('nsmp_year', yearInput.value);
+            localStorage.setItem('nsmp_month', monthInput.value);
+            localStorage.setItem('nsmp_dates', datesInput.value);
+            localStorage.setItem('nsmp_place', placeInput.value);
+            localStorage.setItem('nsmp_doc_date', docDateInput.value);
+            localStorage.setItem('nsmp_name', nameInput.value);
 
-            // Prefix Year to Month Name (e.g. "2026 ഒക്ടോബർ")
-            document.getElementById('outYearMonth').textContent = `${yearVal} ${monthName}`;
-            document.getElementById('outDaysCount').textContent = document.getElementById('daysCountInput').value || '---';
-
-            // Apply Full Month & Year Suffix to Dates (e.g., 12/10/2026)
-            const rawDates = document.getElementById('datesListInput').value;
-            document.getElementById('outDatesList').textContent = formatDatesWithFullSuffix(rawDates, monthNum, yearVal);
-
-            document.getElementById('outPlace').textContent = document.getElementById('placeInput').value || '';
-            document.getElementById('outName').textContent = document.getElementById('nameInput').value || 'ഗീവർ കൊള്ളന്നൂർ യു';
-            
-            const rawDate = document.getElementById('dateInput').value;
-            document.getElementById('outDate').textContent = formatDateString(rawDate);
+            // Show auto-save status text briefly
+            saveStatus.classList.remove('hidden');
+            setTimeout(() => {
+                saveStatus.classList.add('hidden');
+            }, 1000);
         }
 
-        // Attach Event Listeners
-        document.getElementById('monthInput').addEventListener('change', updatePreview);
-        document.getElementById('daysCountInput').addEventListener('input', updatePreview);
-        document.getElementById('yearInput').addEventListener('input', updatePreview);
-        document.getElementById('datesListInput').addEventListener('input', updatePreview);
-        document.getElementById('placeInput').addEventListener('input', updatePreview);
-        document.getElementById('dateInput').addEventListener('change', updatePreview);
-        document.getElementById('nameInput').addEventListener('input', updatePreview);
+        // Reset to default settings
+        function resetDefaults() {
+            localStorage.removeItem('nsmp_year');
+            localStorage.removeItem('nsmp_month');
+            localStorage.removeItem('nsmp_dates');
+            localStorage.removeItem('nsmp_place');
+            localStorage.removeItem('nsmp_doc_date');
+            localStorage.removeItem('nsmp_name');
 
-        // Initial setup
-        window.addEventListener('DOMContentLoaded', updatePreview);
+            initData();
+        }
+
+        // Event listeners for input changes
+        [yearInput, monthInput, datesInput, placeInput, docDateInput, nameInput].forEach(inputEl => {
+            inputEl.addEventListener('input', updateDocument);
+            inputEl.addEventListener('change', updateDocument);
+        });
+
+        // Load data on page launch
+        window.addEventListener('DOMContentLoaded', initData);
     </script>
 </body>
 </html>
