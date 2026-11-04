@@ -265,25 +265,11 @@
 
             calculatedDaysBadge.textContent = `ആകെ: ${totalDaysCount} ദിവസം`;
 
-            // Save to localStorage
-            saveToLocalStorage();
+           
         }
 
-        // Save preferences
-        function saveToLocalStorage() {
-            localStorage.setItem('nsmp_year', yearInput.value);
-            localStorage.setItem('nsmp_month', monthInput.value);
-            localStorage.setItem('nsmp_dates', datesInput.value);
-            localStorage.setItem('nsmp_place', placeInput.value);
-            localStorage.setItem('nsmp_doc_date', docDateInput.value);
-            localStorage.setItem('nsmp_name', nameInput.value);
+     
 
-            // Show auto-save status text briefly
-            saveStatus.classList.remove('hidden');
-            setTimeout(() => {
-                saveStatus.classList.add('hidden');
-            }, 1000);
-        }
 
         // Reset to default settings
         function resetDefaults() {
