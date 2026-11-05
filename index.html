@@ -219,12 +219,12 @@
         function initData() {
             const currentYear = new Date().getFullYear();
             
-            yearInput.value = localStorage.getItem('nsmp_year') || currentYear;
-            monthInput.value = localStorage.getItem('nsmp_month') || 'ഒക്ടോബർ';
+            yearInput.value =  currentYear;
+            monthInput.value = 'ഒക്ടോബർ';
             datesInput.value = decodeURIComponent(window.location.search) || '2,3';
-            placeInput.value = localStorage.getItem('nsmp_place') || 'തൃശ്ശൂർ';
-            docDateInput.value = localStorage.getItem('nsmp_doc_date') || getCurrentFormattedDate();
-            nameInput.value = localStorage.getItem('nsmp_name') || 'ഗീവർ കൊള്ളന്നൂർ യു';
+            placeInput.value =  'തൃശ്ശൂർ';
+            docDateInput.value =  getCurrentFormattedDate();
+            nameInput.value =  'ഗീവർ കൊള്ളന്നൂർ യു';
 
             updateDocument();
         }
@@ -273,12 +273,7 @@
 
         // Reset to default settings
         function resetDefaults() {
-            localStorage.removeItem('nsmp_year');
-            localStorage.removeItem('nsmp_month');
-            localStorage.removeItem('nsmp_dates');
-            localStorage.removeItem('nsmp_place');
-            localStorage.removeItem('nsmp_doc_date');
-            localStorage.removeItem('nsmp_name');
+           
 
             initData();
         }
