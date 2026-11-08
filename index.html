@@ -186,9 +186,26 @@
 
     <!-- Application Script -->
     <script>
-        var toorDatesa = decodeURIComponent(window.location.search);
-        var toorDates = toorDatesa.substring(2).replace("]", "");
-        // DOM Elements
+         const malayalamMonths = {
+    "January": "ജനുവരി",
+    "February": "ഫെബ്രുവരി",
+    "March": "മാർച്ച്",
+    "April": "ഏപ്രിൽ",
+    "May": "മേയ്",
+    "June": "ജൂൺ",
+    "July": "ജൂലൈ",
+    "August": "ഓഗസ്റ്റ്",
+    "September": "സെപ്റ്റംബർ",
+    "October": "ഒക്ടോബർ",
+    "November": "നവംബർ",
+    "December": "ഡിസംബർ"
+};
+       const urlParams = new URLSearchParams(window.location.search); 
+var toorDates = urlParams.get('data');
+var subMonth= urlParams.get('month'); 
+var subYear= urlParams.get('year'); 
+       
+     
         const yearInput = document.getElementById('yearInput');
         const monthInput = document.getElementById('monthInput');
         const datesInput = document.getElementById('datesInput');
@@ -219,8 +236,8 @@
         function initData() {
             const currentYear = new Date().getFullYear();
             
-            yearInput.value =  currentYear;
-            monthInput.value = 'ഒക്ടോബർ';
+           yearInput.value =  subYear|| currentYear;
+            monthInput.value = malayalamMonths[subMonth]||'ഒക്ടോബർ';
             datesInput.value = toorDates|| '2,3';
             placeInput.value =  'തൃശ്ശൂർ';
             docDateInput.value =  getCurrentFormattedDate();
